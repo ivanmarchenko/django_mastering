@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+    web:
+        build: .
+        command: python manage.py runserver 0.0.0.0:8000
+        # https://medium.com/faun/set-current-host-user-for-docker-container-4e521cef9ffc
+        user: $UID:$GID
+        volumes:
+            - .:/django_mastering
+            # set TIMEZONE
+            # https://stackoverflow.com/questions/39172652/using-docker-compose-to-set-containers-timezones
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+        ports: 
+            - 8000:8000
+        depends_on: 
+            - db
+    db:
+        image: postgres:11
+        environment: 
+            - POSTGRES_PASSWORD=postgres
+        volumes:
+            - pgdata_django_mastering:/var/lib/postgresql/data
+            # set TIMEZONE
+            # https://stackoverflow.com/questions/39172652/using-docker-compose-to-set-containers-timezones
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+        # volumes:
+            # - postgres_data:/var/lib/postgres/data
+            # - ./postgres-data:/var/lib/postgresql/data
+
+volumes: 
+    pgdata_django_mastering:
